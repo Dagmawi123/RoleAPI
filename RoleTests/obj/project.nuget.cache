@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8FQGYB+t1KdAOGpjaydO/+lehLRD+mC9hemstKA7zUUIH7Lqaf/PDm/w+c5AAFCOD5BPDQoBQyWkcqnf86pb3w==",
+  "dgSpecHash": "h8h6RcmDcvl7ju4CZZn+7GjHq+bof79IwPVSJH6ZgT5C1RqbbDBoHsSxLgRg1dWj1X4tuzpHjD8dBqCgRilELg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\RoleTests.csproj",
+  "projectFilePath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\RoleTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

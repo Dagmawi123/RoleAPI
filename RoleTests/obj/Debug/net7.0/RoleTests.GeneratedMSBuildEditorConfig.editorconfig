@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = RoleTests
-build_property.ProjectDir = C:\Users\user\source\repos\OrgRoles\RoleTests\
+build_property.ProjectDir = C:\Users\user\source\repos\OrgRoles\RoleAPI\RoleTests\

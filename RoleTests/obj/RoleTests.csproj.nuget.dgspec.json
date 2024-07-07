@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\RoleTests.csproj": {}
+    "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\RoleTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\OrgRoles.csproj": {
+    "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\OrgRoles.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\OrgRoles.csproj",
+        "projectUniqueName": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\OrgRoles.csproj",
         "projectName": "OrgRoles",
-        "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\OrgRoles.csproj",
+        "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\OrgRoles.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\obj\\",
+        "outputPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -91,14 +91,14 @@
         }
       }
     },
-    "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\RoleTests.csproj": {
+    "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\RoleTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\RoleTests.csproj",
+        "projectUniqueName": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\RoleTests.csproj",
         "projectName": "RoleTests",
-        "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\RoleTests.csproj",
+        "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\RoleTests.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleTests\\obj\\",
+        "outputPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\RoleTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -118,8 +118,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\OrgRoles.csproj": {
-                "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\OrgRoles\\OrgRoles.csproj"
+              "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\OrgRoles.csproj": {
+                "projectPath": "C:\\Users\\user\\source\\repos\\OrgRoles\\RoleAPI\\OrgRoles\\OrgRoles.csproj"
               }
             }
           }
