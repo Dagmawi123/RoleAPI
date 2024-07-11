@@ -3,7 +3,7 @@
     public interface IRoleRepository 
     {
         public  Task<Role> AddRole(RoleRequest roleRq);
-        public Role checkRole(Guid id);
+        public Role checkRole(Guid? id);
         public  Task<Role> UpdateRole(Role role, RoleRequest roleRq);
         public Role GetRole(Guid id);
         public  Task RemoveRole(Role role);

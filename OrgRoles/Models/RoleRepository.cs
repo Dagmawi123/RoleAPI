@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace OrgRoles.Models
@@ -20,15 +21,22 @@ namespace OrgRoles.Models
             };
             if (roleRq.ParentID.HasValue)
             {
-                _role.Parent = _context.Roles.Where(r => r.Id == roleRq.ParentID).FirstOrDefault();
+                _role.ParentId = _context.Roles.Where(r => r.Id == roleRq.ParentID).Select(r => r.Id).FirstOrDefault();
             }
+                //  should checkRole be in read or write repository ??
+
+                //Role role = checkRole(roleRq.ParentID);
+                //if (role != null) {
+                //    _role.ParentId = role.ParentId;
+                //}
+          
             _context.Roles.Add(_role);
             await _context.SaveChangesAsync();
             return _role;
 
 
         }
-        public Role checkRole(Guid id)
+        public Role checkRole(Guid? id)
         {
             Role? role = _context.Roles.Where(r => r.Id == id).Include(r => r.Parent).FirstOrDefault();
             if (role == null)
@@ -45,7 +53,7 @@ namespace OrgRoles.Models
             role.Description = roleRq.Description;
             if (roleRq.ParentID.HasValue)
             {
-                role.Parent = _context.Roles.Where(r => r.Id == roleRq.ParentID).FirstOrDefault();
+              role.ParentId = _context.Roles.Where(r => r.Id == roleRq.ParentID).Select(r => r.Id).FirstOrDefault();
             }
             await _context.SaveChangesAsync();
             return role;
@@ -56,21 +64,32 @@ namespace OrgRoles.Models
             Role? role = _context.Roles.Where(r => r.Id == id).Include(r => r.Parent).FirstOrDefault();
             return role;
         }
+
         //ON DELETE CASCADE deletion
+
+
+
         public async Task RemoveRole(Role role) 
         {
-            List<Role> childRoles = _context.Roles
-                .Where(r=>r.Parent != null && r.Parent.Id == role.Id)
-                .ToList();
+            RemoveRecursive(role);
+            await _context.SaveChangesAsync();
+               return;
+        }
 
-            foreach (Role ChildRole in childRoles ) 
+        public void RemoveRecursive(Role role) {
+
+            List<Role> childRoles = _context.Roles
+               .Where(r => r.Parent != null && r.Parent.Id == role.Id)
+               .ToList();
+
+            foreach (Role ChildRole in childRoles)
             {
-                await RemoveRole(ChildRole);
+                RemoveRecursive(ChildRole);
             }
             _context.Roles.Remove(role);
-            await _context.SaveChangesAsync();
-            return;
+
         }
+
 
         public async Task RemoveThisRole(Role role) {
 
@@ -111,8 +130,9 @@ namespace OrgRoles.Models
         }
 
         public string GetTree() {
-            Guid Id = _context.Roles.Where(r => r.Name=="CEO").Select(r => r.Id).First();
-            string tree = DrawTree("", "", Id, Roles());
+            List<Role> roles = Roles();
+            Guid Id = roles.Where(r => r.Name=="CEO").Select(r => r.Id).First();
+            string tree = DrawTree("", "", Id,roles );
             return tree;
         }
 

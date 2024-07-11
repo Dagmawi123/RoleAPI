@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using OrgRoles.Models;
-using System.Data;
+using OrgRoles.Models.Commands;
+using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Controllers
 {
@@ -13,34 +11,46 @@ namespace OrgRoles.Controllers
     {
 
         IRoleRepository roleRepo;
-        public RoleController(RoleContext roleContext, IRoleRepository roleRepo)
+        //IRoleCommandsRepository commandsRepo;
+        //IRoleQueriesRepository queriesRepo;
+
+       private readonly IRoleCommands roleCommands;
+        private readonly IRoleQueries roleQueries;
+
+        public RoleController(IRoleCommands roleCommands,IRoleQueries roleQueries, IRoleRepository roleRepo)
         {
+            //this.roleRepo = roleRepo;
+            //this.queriesRepo = queriesRepo;
+            //this.commandsRepo= commandsRepo;
+            this.roleQueries = roleQueries;
+            this.roleCommands = roleCommands;
             this.roleRepo = roleRepo;
         }
 
         [HttpPost]
         public async Task<ActionResult<Role>> CreateRole(RoleRequest roleRq)
         {
-            Role _role = await roleRepo.AddRole(roleRq);
+
+            Role _role = await roleCommands.SaveRole(roleRq);
             return CreatedAtAction(nameof(CreateRole), _role);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Role>> UpdateRole(Guid id, RoleRequest roleRq)
         {
-            Role? role =roleRepo.checkRole(id);
+            Role? role =roleQueries.checkRole(id);
             if (role == null)
             {
                 return NotFound();
             }
-            role = await roleRepo.UpdateRole(role, roleRq);
+            role = await roleCommands.UpdateRole(role, roleRq);
             return Ok(role);
         }
 
         [HttpGet("{id}")]
         public ActionResult<Role> GetRole(Guid id)
         {
-            Role role = roleRepo.GetRole(id);
+            Role role = roleQueries.GetRole(id);
             if (role == null)
             {
                 return NotFound();
@@ -52,7 +62,7 @@ namespace OrgRoles.Controllers
         //removing including all children 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Role>> RemoveRole(Guid id) {
-            Role? role = roleRepo.checkRole(id);
+            Role? role = roleQueries.checkRole(id);
             if (role == null)
             {
                 return NotFound();
@@ -70,7 +80,7 @@ namespace OrgRoles.Controllers
         [HttpDelete]
          public async Task<ActionResult<Role>> RemoveSingleRole(Guid id)
         {
-            Role? role = roleRepo.checkRole(id);
+            Role? role = roleQueries.checkRole(id);
             if (role == null)
             {
                 return NotFound();
@@ -89,7 +99,7 @@ namespace OrgRoles.Controllers
         [HttpGet]
         public ActionResult<List<Role>> GetChildren(Guid id)
         {
-            List<Role> _roles= roleRepo.Roles();
+            List<Role> _roles= roleQueries.Roles();
             Role? role = _roles.Find(r=>r.Id==id);
             if (role == null)
             {
@@ -97,7 +107,7 @@ namespace OrgRoles.Controllers
             }
             else { 
             List<Role> children = new List<Role>();
-                roleRepo.findChildren(role.Id, children,_roles);
+                roleQueries.findChildren(role.Id, children,_roles);
             return Ok(children);
             }
             
@@ -106,7 +116,7 @@ namespace OrgRoles.Controllers
 
        [HttpGet]
        public ActionResult<List<Role>> GetRoles() {
-         string tree = roleRepo.GetTree();
+         string tree = roleQueries.GetTree();
               return Ok(tree);
             
         }
