@@ -5,16 +5,16 @@ namespace OrgRoles.Models.Repos
 {
     public class RoleCommandsRepository : IRoleCommandsRepository
     {
-        RoleContext _context;
+        private readonly RoleContext _context;
         public RoleCommandsRepository(RoleContext context)
         {
             _context = context;
         }
 
 
-        public async Task<Role> AddRole(RoleRequest roleRq)
+        public async Task<Role> AddRole(RoleDTO roleRq)
         {
-            Role _role = new Role()
+            Role _role = new()
             {
                 Name = roleRq.Name,
                 Description = roleRq.Description,
@@ -23,13 +23,7 @@ namespace OrgRoles.Models.Repos
             {
                 _role.ParentId = _context.Roles.Where(r => r.Id == roleRq.ParentID).Select(r => r.Id).FirstOrDefault();
             }
-            //  should checkRole be in read or write repository ??
-
-            //Role role = checkRole(roleRq.ParentID);
-            //if (role != null) {
-            //    _role.ParentId = role.ParentId;
-            //}
-
+            
             _context.Roles.Add(_role);
                 await _context.SaveChangesAsync();
             return _role;
@@ -37,7 +31,7 @@ namespace OrgRoles.Models.Repos
 
         }
 
-        public async Task<Role> UpdateRole(Role role, RoleRequest roleRq)
+        public async Task<Role> UpdateRole(Role role, RoleDTO roleRq)
         {
             role.Name = roleRq.Name;
             role.Description = roleRq.Description;
@@ -48,6 +42,45 @@ namespace OrgRoles.Models.Repos
             await _context.SaveChangesAsync();
             return role;
         }
+
+        public async Task RemoveRole(Role role)
+        {
+            RemoveRecursive(role);
+            await _context.SaveChangesAsync();
+            return;
+        }
+
+        public void RemoveRecursive(Role role)
+        {
+
+            List<Role> childRoles = _context.Roles
+               .Where(r => r.Parent != null && r.Parent.Id == role.Id)
+               .ToList();
+
+            foreach (Role ChildRole in childRoles)
+            {
+                RemoveRecursive(ChildRole);
+            }
+            _context.Roles.Remove(role);
+
+        }
+
+
+        public async Task RemoveThisRole(Role role)
+        {
+
+            List<Role> childRoles = _context.Roles
+                            .Where(r => (r.Parent != null && r.Parent.Id == role.Id))
+                            .ToList();
+            foreach (Role childRole in childRoles)
+            {
+                childRole.Parent = role.Parent;
+            }
+            _context.Roles.Remove(role);
+            await _context.SaveChangesAsync();
+
+        }
+
 
 
 

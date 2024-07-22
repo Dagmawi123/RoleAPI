@@ -2,7 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using OrgRoles.Controllers;
 using OrgRoles.Models;
 using OrgRoles.Models.Repos;
-using OrgRoles.Models.Commands;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Reflection;
+using OrgRoles.Models.Commands.Old;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<RoleContext, RoleContext>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+//builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleCommandsRepository, RoleCommandsRepository>();
 builder.Services.AddScoped<IRoleQueriesRepository, RoleQueriesRepository>();
 builder.Services.AddScoped<IRoleCommands, RoleCommands>();
@@ -21,9 +24,19 @@ builder.Services.AddScoped<IRoleQueries, RoleQueries>();
 
 
 builder.Services.AddScoped<RoleController, RoleController>();
-builder.Services.AddDbContext<RoleContext>(options => {
+
+builder.Services.AddDbContext<RoleContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection"));
 });
+
+//builder.Services.AddDbContext<RoleContext>(options => {
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("MyConnection"));
+//    });
+
+//AppContext.SetSwitch("Npgsql.EnableDiagnostics", true);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

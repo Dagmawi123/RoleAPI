@@ -1,14 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using OrgRoles.Models;
+using System.Data.SqlClient;
 
 namespace OrgRoles.Models.Repos
 {
     public class RoleQueriesRepository : IRoleQueriesRepository
     {
-        RoleContext _context;
-        public RoleQueriesRepository(RoleContext context)
+       private readonly RoleContext _context;
+      private readonly  IConfiguration configuration; 
+        public RoleQueriesRepository(RoleContext context,IConfiguration config)
         {
             _context = context;
+            configuration = config;
         }
 
         public Role checkRole(Guid? id)
@@ -23,10 +27,19 @@ namespace OrgRoles.Models.Repos
 
         }
 
-        public Role GetRole(Guid id)
+        public async Task<Role>  GetRole(Guid id)
         {
-            Role? role = _context.Roles.Where(r => r.Id == id).Include(r => r.Parent).FirstOrDefault();
-            return role;
+            Role? role;
+            var sql = "select * from Roles where Id= @id";
+            using (var myconnection = new SqlConnection(configuration.GetConnectionString("MyConnection")))
+            { 
+                myconnection.Open();
+               role = await myconnection.QuerySingleOrDefaultAsync<Role>(sql, new { id });
+                 
+            
+            }
+  //              Role? role = _context.Roles.Where(r => r.Id == id).Include(r => r.Parent).FirstOrDefault();
+           return role;
         }
 
 

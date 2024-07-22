@@ -8,6 +8,7 @@ namespace OrgRoles.Configuration
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
+            builder.Property(r => r.Id).ValueGeneratedOnAdd();
             builder.HasOne(r => r.Parent)
                  .WithMany()
                  .HasForeignKey(r => r.ParentId)

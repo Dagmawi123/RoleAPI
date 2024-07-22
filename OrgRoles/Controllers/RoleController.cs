@@ -1,6 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using OrgRoles.Models;
-using OrgRoles.Models.Commands;
+using OrgRoles.Models.Commands.Create;
+using OrgRoles.Models.Commands.Delete;
+using OrgRoles.Models.Commands.Old;
+using OrgRoles.Models.Commands.Update;
+using OrgRoles.Models.Queries;
+using OrgRoles.Models.Queries.Get;
 using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Controllers
@@ -8,49 +14,57 @@ namespace OrgRoles.Controllers
     [Route("api/roles")]
     [ApiController]
     public class RoleController : ControllerBase
-    {
-
-        IRoleRepository roleRepo;
-        //IRoleCommandsRepository commandsRepo;
-        //IRoleQueriesRepository queriesRepo;
+    {       
 
        private readonly IRoleCommands roleCommands;
         private readonly IRoleQueries roleQueries;
+        private readonly IMediator mediator;
 
-        public RoleController(IRoleCommands roleCommands,IRoleQueries roleQueries, IRoleRepository roleRepo)
+        public RoleController(IRoleCommands roleCommands,IRoleQueries roleQueries, IMediator mediator)
         {
-            //this.roleRepo = roleRepo;
-            //this.queriesRepo = queriesRepo;
-            //this.commandsRepo= commandsRepo;
+       
             this.roleQueries = roleQueries;
             this.roleCommands = roleCommands;
-            this.roleRepo = roleRepo;
+            this.mediator = mediator;
+   
         }
+
+
 
         [HttpPost]
-        public async Task<ActionResult<Role>> CreateRole(RoleRequest roleRq)
+        public async Task<ActionResult<Role>> CreateRole(RoleDTO roleRq)
         {
+            var command = new AddRoleCommand(roleRq);
 
-            Role _role = await roleCommands.SaveRole(roleRq);
+            //Role _role = await roleCommands.SaveRole(roleRq);
+            Role _role = await mediator.Send(command);
+
             return CreatedAtAction(nameof(CreateRole), _role);
         }
+        
+
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Role>> UpdateRole(Guid id, RoleRequest roleRq)
+        public async Task<ActionResult<Role>> UpdateRole(Guid id, RoleDTO roleRq)
         {
             Role? role =roleQueries.checkRole(id);
             if (role == null)
             {
                 return NotFound();
             }
-            role = await roleCommands.UpdateRole(role, roleRq);
+            var command = new UpdateRoleCommand(role,roleRq);
+            role=await mediator.Send(command);
+
+           // role = await roleCommands.UpdateRole(role, roleRq);
             return Ok(role);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Role> GetRole(Guid id)
+        public async Task<ActionResult<Role>> GetRole(Guid id)
         {
-            Role role = roleQueries.GetRole(id);
+            var query = new GetRoleQuery(id);
+          Role role = await mediator.Send(query);
+           //  role = await roleQueries.GetRole(id);
             if (role == null)
             {
                 return NotFound();
@@ -59,6 +73,7 @@ namespace OrgRoles.Controllers
                 return Ok(role);
 
         }
+
         //removing including all children 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Role>> RemoveRole(Guid id) {
@@ -68,7 +83,9 @@ namespace OrgRoles.Controllers
                 return NotFound();
             }
             else {
-               await roleRepo.RemoveRole(role);
+                var command = new RemoveRoleCommand(role);
+                await mediator.Send(command);
+             //  await roleCommands.RemoveRole(role);
             }
 
                 return NoContent();
@@ -86,7 +103,10 @@ namespace OrgRoles.Controllers
                 return NotFound();
             }
             else {
-                await roleRepo.RemoveThisRole(role);
+                //await roleCommands.RemoveThisRole(role);
+                var command = new RemoveSingleRoleCommand(role);
+                await mediator.Send(command);
+
                 return NoContent();
             }
 
@@ -97,7 +117,7 @@ namespace OrgRoles.Controllers
 
         [Route("~/api/roles/allChildren/{id}")]
         [HttpGet]
-        public ActionResult<List<Role>> GetChildren(Guid id)
+        public async Task<ActionResult<List<Role>>> GetChildren(Guid id)
         {
             List<Role> _roles= roleQueries.Roles();
             Role? role = _roles.Find(r=>r.Id==id);
@@ -108,15 +128,22 @@ namespace OrgRoles.Controllers
             else { 
             List<Role> children = new List<Role>();
                 roleQueries.findChildren(role.Id, children,_roles);
-            return Ok(children);
+
+                var query = new GetChildrenQuery(role.Id,children,_roles);
+                await mediator.Send(query);
+
+
+                return Ok(children);
             }
             
         }
 
 
        [HttpGet]
-       public ActionResult<List<Role>> GetRoles() {
-         string tree = roleQueries.GetTree();
+       public async Task<ActionResult<string>> GetRoles() {
+            var query= new GetRolesQuery();
+            string tree=await mediator.Send(query);
+         //string tree = roleQueries.GetTree();
               return Ok(tree);
             
         }
