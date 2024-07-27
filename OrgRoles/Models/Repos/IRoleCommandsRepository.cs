@@ -4,10 +4,11 @@ namespace OrgRoles.Models.Repos
 {
     public interface IRoleCommandsRepository
     {
-        public Task<Role> AddRole(RoleDTO roleRq);
-        public Task<Role> UpdateRole(Role role, RoleDTO roleRq);
-        public Task RemoveRole(Role role);
-        public void RemoveRecursive(Role role);
+        public Task<Role> AddRole(Role role);
+        public Task UpdateRole(Role role);
+        public void RemoveRole(Role role);
+        public Task SaveChanges();
+       // public void RemoveRecursive(Role role);
         public Task RemoveThisRole(Role role);
 
     }

@@ -62,6 +62,26 @@
           }
         }
       },
+      "MediatR/12.3.0": {
+        "dependencies": {
+          "MediatR.Contracts": "2.0.1",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1"
+        },
+        "runtime": {
+          "lib/net6.0/MediatR.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.3.0.0"
+          }
+        }
+      },
+      "MediatR.Contracts/2.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/MediatR.Contracts.dll": {
+            "assemblyVersion": "2.0.1.0",
+            "fileVersion": "2.0.1.0"
+          }
+        }
+      },
       "Microsoft.AspNetCore.OpenApi/7.0.13": {
         "dependencies": {
           "Microsoft.OpenApi": "1.4.3"
@@ -1651,6 +1671,7 @@
       "OrgRoles/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.35",
+          "MediatR": "12.3.0",
           "Microsoft.AspNetCore.OpenApi": "7.0.13",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0",
           "Microsoft.Extensions.Configuration": "8.0.0",
@@ -1707,6 +1728,20 @@
       "sha512": "sha512-YKRwjVfrG7GYOovlGyQoMvr1/IJdn+7QzNXJxyMh0YfFF5yvDmTYaJOVYWsckreNjGsGSEtrMTpnzxTUq/tZQw==",
       "path": "dapper/2.1.35",
       "hashPath": "dapper.2.1.35.nupkg.sha512"
+    },
+    "MediatR/12.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DuXRw/qux2n7pTRPond4WK9XImO+30TZrGPCeOmjYIXDWokpjZQDFRsdZMoP0WqWU7inC4m0D+Zbu5dSc4z6NQ==",
+      "path": "mediatr/12.3.0",
+      "hashPath": "mediatr.12.3.0.nupkg.sha512"
+    },
+    "MediatR.Contracts/2.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FYv95bNT4UwcNA+G/J1oX5OpRiSUxteXaUt2BJbRSdRNiIUNbggJF69wy6mnk2wYToaanpdXZdCwVylt96MpwQ==",
+      "path": "mediatr.contracts/2.0.1",
+      "hashPath": "mediatr.contracts.2.0.1.nupkg.sha512"
     },
     "Microsoft.AspNetCore.OpenApi/7.0.13": {
       "type": "package",

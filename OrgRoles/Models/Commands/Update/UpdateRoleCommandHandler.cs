@@ -1,22 +1,31 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using OrgRoles.Models.Commands.Create;
+using OrgRoles.Models.Queries.Get;
+using OrgRoles.Models.Repos;
 using System.Data;
 
 namespace OrgRoles.Models.Commands.Update
 {
-    public class UpdateRoleCommandHandler(RoleContext context) : IRequestHandler<UpdateRoleCommand, Role>
+    public class UpdateRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository commandsRepository) : IRequestHandler<UpdateRoleCommand, Role>
     {
         public async Task<Role> Handle(UpdateRoleCommand updateRolecommand, CancellationToken token)
         {
-            updateRolecommand.role.Name = updateRolecommand.rdto.Name;
-            updateRolecommand.role.Description = updateRolecommand.rdto.Description;
-            if (updateRolecommand.rdto.ParentID.HasValue)
+            Role? role = await getRepository.GetRole(updateRolecommand.id);
+            if (role == null)
+                return null;
+            else
+                role.Name = updateRolecommand.Name;
+           role.Description = updateRolecommand.Description;
+
+            if (updateRolecommand.ParentID!=null) 
             {
-                updateRolecommand.role.ParentId = context.Roles.Where(r => r.Id == updateRolecommand.rdto.ParentID).Select(r => r.Id).FirstOrDefault();
+                if (await getRepository.CheckRole(updateRolecommand.ParentID.Value))
+                    role.ParentId = updateRolecommand.ParentID;
             }
-            await context.SaveChangesAsync();
-            return updateRolecommand.role;
+       await commandsRepository.UpdateRole(role);
+              return role;
         }
     
     }

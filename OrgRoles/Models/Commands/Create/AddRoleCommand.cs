@@ -2,5 +2,5 @@
 
 namespace OrgRoles.Models.Commands.Create
 {
-    public record AddRoleCommand(RoleDTO rdto) : IRequest <Role> ;
+    public record AddRoleCommand(string Name, string Description, Guid? ParentID) : IRequest <Role> ;
 }

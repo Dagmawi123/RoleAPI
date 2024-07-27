@@ -12,8 +12,8 @@ using OrgRoles.Models;
 namespace OrgRoles.Migrations
 {
     [DbContext(typeof(RoleContext))]
-    [Migration("20240718184834_PostGresDB")]
-    partial class PostGresDB
+    [Migration("20240723141011_new")]
+    partial class @new
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

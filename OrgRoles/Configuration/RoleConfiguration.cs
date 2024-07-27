@@ -8,6 +8,7 @@ namespace OrgRoles.Configuration
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
+            //configure column name with paren
             builder.Property(r => r.Id).ValueGeneratedOnAdd();
             builder.HasOne(r => r.Parent)
                  .WithMany()

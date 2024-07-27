@@ -1,31 +1,33 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using OrgRoles.Models.Queries.Get;
+using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Models.Commands.Delete
 {
-    public class RemoveRoleCommandHandler(RoleContext context) : IRequestHandler<RemoveRoleCommand> 
+    public class RemoveRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository commandsRepository) : IRequestHandler<RemoveRoleCommand> 
     {
-
+       
         public async Task Handle(RemoveRoleCommand rrc,CancellationToken token) 
         { 
-         RemoveRecursive(rrc.role);
-            await context.SaveChangesAsync();
+            List<Role> roles = await getRepository.GetRoles();
+         RemoveRecursive(rrc.role,roles);
+            await commandsRepository.SaveChanges();
             return;
         }
 
-        public void RemoveRecursive(Role role)
+        public void RemoveRecursive(Role role,List<Role> roles)
         {
 
-            List<Role> childRoles = context.Roles
-               .Where(r => r.Parent != null && r.Parent.Id == role.Id)
+            List<Role> childRoles = roles
+               .Where(r => r.ParentId == role.Id)
                .ToList();
 
             foreach (Role ChildRole in childRoles)
             {
-                RemoveRecursive(ChildRole);
+                RemoveRecursive(ChildRole,roles);
             }
-            context.Roles.Remove(role);
-
+           commandsRepository.RemoveRole(role);
         }
     }
 }

@@ -1,23 +1,29 @@
 ﻿
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using OrgRoles.Models.Queries.Get;
+using OrgRoles.Models.Repos;
 using System.Data;
 
 namespace OrgRoles.Models.Commands.Delete
 {
-    public class RemoveSingleRoleCommandHandler(RoleContext context) : IRequestHandler<RemoveSingleRoleCommand>
+    public class RemoveSingleRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository commandsRepository) : IRequestHandler<RemoveSingleRoleCommand>
     {
         public async Task Handle(RemoveSingleRoleCommand rrc, CancellationToken token)
         {
-            List<Role> childRoles = context.Roles
-                                      .Where(r => (r.Parent != null && r.Parent.Id == rrc.role.Id))
+            List<Role> roles = await getRepository.GetRoles();
+            List<Role> childRoles = roles
+                                      .Where(r => ( r.ParentId == rrc.role.Id))
                                       .ToList();
             foreach (Role childRole in childRoles)
             {
-                childRole.Parent = rrc.role.Parent;
+                childRole.ParentId = rrc.role.ParentId;
+               await commandsRepository.UpdateRole(childRole);
+                
             }
-            context.Roles.Remove(rrc.role);
-            await context.SaveChangesAsync();
+            commandsRepository.RemoveRole(rrc.role);
+            //context.Roles.Remove(rrc.role);
+            await commandsRepository.SaveChanges();
         }
     }
 }

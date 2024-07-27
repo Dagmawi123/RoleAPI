@@ -12,58 +12,46 @@ namespace OrgRoles.Models.Repos
         }
 
 
-        public async Task<Role> AddRole(RoleDTO roleRq)
+        public async Task<Role> AddRole(Role role)
         {
-            Role _role = new()
-            {
-                Name = roleRq.Name,
-                Description = roleRq.Description,
-            };
-            if (roleRq.ParentID.HasValue)
-            {
-                _role.ParentId = _context.Roles.Where(r => r.Id == roleRq.ParentID).Select(r => r.Id).FirstOrDefault();
-            }
             
-            _context.Roles.Add(_role);
+            _context.Roles.Add(role);
                 await _context.SaveChangesAsync();
-            return _role;
-
-
-        }
-
-        public async Task<Role> UpdateRole(Role role, RoleDTO roleRq)
-        {
-            role.Name = roleRq.Name;
-            role.Description = roleRq.Description;
-            if (roleRq.ParentID.HasValue)
-            {
-                role.ParentId = _context.Roles.Where(r => r.Id == roleRq.ParentID).Select(r => r.Id).FirstOrDefault();
-            }
-            await _context.SaveChangesAsync();
             return role;
+
+
         }
 
-        public async Task RemoveRole(Role role)
+        public async Task UpdateRole(Role role)
+        {   _context.Entry(role).State = EntityState.Modified;
+            await SaveChanges();          
+        }
+        public async Task SaveChanges() {
+            await _context.SaveChangesAsync(); 
+        }
+
+        public void RemoveRole(Role role)
         {
-            RemoveRecursive(role);
-            await _context.SaveChangesAsync();
-            return;
+            //RemoveRecursive(role);
+             _context.Roles.Remove(role);
+           // await _context.SaveChangesAsync();
+            //return Task.CompletedTask;
         }
 
-        public void RemoveRecursive(Role role)
-        {
+        //public void RemoveRecursive(Role role)
+        //{
 
-            List<Role> childRoles = _context.Roles
-               .Where(r => r.Parent != null && r.Parent.Id == role.Id)
-               .ToList();
+        //    List<Role> childRoles = _context.Roles
+        //       .Where(r => r.Parent != null && r.Parent.Id == role.Id)
+        //       .ToList();
 
-            foreach (Role ChildRole in childRoles)
-            {
-                RemoveRecursive(ChildRole);
-            }
-            _context.Roles.Remove(role);
+        //    foreach (Role ChildRole in childRoles)
+        //    {
+        //        RemoveRecursive(ChildRole);
+        //    }
+        //    _context.Roles.Remove(role);
 
-        }
+        //}
 
 
         public async Task RemoveThisRole(Role role)

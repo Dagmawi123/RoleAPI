@@ -16,11 +16,7 @@ namespace RoleTests
         [TestMethod]
        public async Task AddRole_ShouldReturn201()
         {
-            RoleRequest rq=new RoleRequest()
-            { 
-            Name="TEST",
-             Description="dsaallnda alkdnas"
-            };
+            RoleDTO rq=new RoleDTO("TEST","dsaallnda alkdnas",null);
             ActionResult<Role> response= await controller.CreateRole(rq);
             Assert.IsNotNull(response);
 

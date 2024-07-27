@@ -1,25 +1,26 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using OrgRoles.Models.Queries.Get;
+using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Models.Commands.Create
 {
-    public class AddRoleCommandHandler(RoleContext context) :IRequestHandler<AddRoleCommand,Role>
+    public class AddRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository roleCommandsRepo) :IRequestHandler<AddRoleCommand,Role>
     {
         public async Task<Role> Handle(AddRoleCommand ALC , CancellationToken token) {
 
             Role _role = new()
             {
-                Name = ALC.rdto.Name,
-                Description = ALC.rdto.Description,
+                Name = ALC.Name,
+                Description = ALC.Description,
             };
-            if (ALC.rdto.ParentID.HasValue)
+            if (ALC.ParentID!=null)
             {
-                _role.ParentId = context.Roles.Where(r => r.Id == (ALC.rdto.ParentID)).Select(r => r.Id).FirstOrDefault();
+                if (await getRepository.CheckRole(ALC.ParentID.Value))
+                    _role.ParentId = ALC.ParentID;
             }
-
-            context.Roles.Add(_role);
-            await context.SaveChangesAsync();
-            return _role;
+        _role= await roleCommandsRepo.AddRole(_role);
+           return _role;
         }
     }
 }
