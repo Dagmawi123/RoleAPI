@@ -11,19 +11,51 @@ namespace OrgRoles.Models.Commands.Delete
     {
         public async Task Handle(RemoveSingleRoleCommand rrc, CancellationToken token)
         {
-            List<Role> roles = await getRepository.GetRoles();
-            List<Role> childRoles = roles
-                                      .Where(r => ( r.ParentId == rrc.role.Id))
-                                      .ToList();
-            foreach (Role childRole in childRoles)
+    
+          await PromoteChildren(rrc.role);
+            await commandsRepository.SaveChanges();
+            List<Role> children = await getRepository.GetSuccessors(rrc.role.Id);
+            commandsRepository.RemoveRole(rrc.role);
+            await commandsRepository.SaveChanges();
+            //context.Roles.Remove(rrc.role);
+
+        }
+        public async Task PromoteChildren(Role role)
+        {
+            List<Role> children = await getRepository.GetSuccessors(role.Id);
+            if (children.Count() != 0) 
             {
-                childRole.ParentId = rrc.role.ParentId;
-               await commandsRepository.UpdateRole(childRole);
+               Role candidate= findCandidate(children);
+                foreach (Role childRole in children)
+                {
+                    if (childRole.Id != candidate.Id) { 
+                    childRole.ParentId= candidate.Id;
+                        commandsRepository.NotifyChange(childRole);
+                    }                        
+
+                }               
+
+                await PromoteChildren(candidate);
+                if (role.ParentId == null) { 
+                candidate.ParentId= role.ParentId;
+                    commandsRepository.NotifyChange(candidate);
+                }
                 
             }
-            commandsRepository.RemoveRole(rrc.role);
-            //context.Roles.Remove(rrc.role);
-            await commandsRepository.SaveChanges();
         }
+
+
+        public Role findCandidate(List<Role> roles) {
+            foreach (Role role in roles) 
+            { 
+            if(role.isCandidate)
+                    return role;
+            }
+            return roles[0];
+        }
+
+
+
+
     }
 }

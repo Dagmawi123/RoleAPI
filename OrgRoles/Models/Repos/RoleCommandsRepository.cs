@@ -29,31 +29,19 @@ namespace OrgRoles.Models.Repos
         public async Task SaveChanges() {
             await _context.SaveChangesAsync(); 
         }
+        public void NotifyChange(Role role)
+        {
+            _context.Entry(role).State = EntityState.Modified;
+        }
 
         public void RemoveRole(Role role)
         {
-            //RemoveRecursive(role);
+         
              _context.Roles.Remove(role);
-           // await _context.SaveChangesAsync();
-            //return Task.CompletedTask;
+           
         }
 
-        //public void RemoveRecursive(Role role)
-        //{
-
-        //    List<Role> childRoles = _context.Roles
-        //       .Where(r => r.Parent != null && r.Parent.Id == role.Id)
-        //       .ToList();
-
-        //    foreach (Role ChildRole in childRoles)
-        //    {
-        //        RemoveRecursive(ChildRole);
-        //    }
-        //    _context.Roles.Remove(role);
-
-        //}
-
-
+        
         public async Task RemoveThisRole(Role role)
         {
 

@@ -13,6 +13,8 @@ namespace OrgRoles.Models
 
         public Guid? ParentId { get; set; } = null;
 
+        public bool isCandidate { get; set; } = false;
+
         public Role? Parent { get; set; }
 
     }

@@ -39,6 +39,7 @@ namespace OrgRoles.Controllers
         //validation
         //one more repo for dapper-getting
         //role priority?
+        //snail case for columns..
         [HttpPut("{id}")]
         public async Task<ActionResult<Role>> UpdateRole(UpdateRoleCommand command)
         {

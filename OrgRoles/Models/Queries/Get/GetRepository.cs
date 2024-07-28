@@ -76,6 +76,19 @@ namespace OrgRoles.Models.Queries.Get
             if (role == null) return false;
             return true;
         }
+
+        public async Task<List<Role>> GetSuccessors(Guid id)
+        {
+            using (var connection = new SqlConnection(configuration.GetConnectionString("MyConnection")))
+            {
+                connection.Open();
+                var query = "select * from Roles where ParentId=@id";
+                var results= await connection.QueryAsync<Role>(query,new {id});
+                return results.ToList();
+
+            }
+        
+        }
     }
 
 

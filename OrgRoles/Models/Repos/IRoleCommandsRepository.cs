@@ -10,6 +10,6 @@ namespace OrgRoles.Models.Repos
         public Task SaveChanges();
        // public void RemoveRecursive(Role role);
         public Task RemoveThisRole(Role role);
-
+        public void NotifyChange(Role role);
     }
 }

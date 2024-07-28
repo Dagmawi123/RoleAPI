@@ -13,6 +13,7 @@ namespace OrgRoles.Models.Commands.Create
             {
                 Name = ALC.Name,
                 Description = ALC.Description,
+                isCandidate=ALC.isCandidate
             };
             if (ALC.ParentID!=null)
             {
