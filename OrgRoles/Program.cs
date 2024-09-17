@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
 using OrgRoles.Models.Queries.Get;
+using OrgRoles.Interceptors;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,23 +17,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<RoleContext, RoleContext>();
+//inject dapper here
 //builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleCommandsRepository, RoleCommandsRepository>();
-builder.Services.AddScoped<IRoleQueriesRepository, RoleQueriesRepository>();
+//builder.Services.AddScoped<IRoleQueriesRepository, RoleQueriesRepository>();
 builder.Services.AddScoped<IGetRepository,GetRepository>();
 
 
 builder.Services.AddScoped<RoleController, RoleController>();
 
-builder.Services.AddDbContext<RoleContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection"));
-});
-
 //builder.Services.AddDbContext<RoleContext>(options =>
 //{
-//   options.UseNpgsql(builder.Configuration.GetConnectionString("MyConnection"));
-//});
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection"));
+//});   
+
+builder.Services.AddDbContext<RoleContext>(options =>
+{
+   // options.AddInterceptors(new EFSaveChangesInterceptor());
+    options.UseNpgsql(builder.Configuration.GetConnectionString("MyConnection"));
+});
 
 //AppContext.SetSwitch("Npgsql.EnableDiagnostics", true);
 

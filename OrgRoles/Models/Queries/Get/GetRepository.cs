@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using Dapper;
 using System;
 using Microsoft.EntityFrameworkCore;
+using OrgRoles.Configuration;
 
 namespace OrgRoles.Models.Queries.Get
 {
@@ -10,20 +11,27 @@ namespace OrgRoles.Models.Queries.Get
     {
         public async Task<Role> GetRole(Guid id) {
             Role? role;
-            var sql = "select * from Roles where Id= @id";
-            using (var myconnection = new SqlConnection(configuration.GetConnectionString("MyConnection")))
+            var sql = "select * from public." + '"' + "Roles" + '"' + "where Id= @id";
+            var PGSQL = new PGSQL(configuration);
+            using (var connection = PGSQL.createConnection())
             {
-                myconnection.Open();
-                role = await myconnection.QuerySingleOrDefaultAsync<Role>(sql, new { id });
-
+                connection.Open();
+                role = await connection.QuerySingleOrDefaultAsync<Role>(sql, new { id });
+                connection.Close();
 
             }
+          
             return role;
         }
         public async Task<List<Role>> GetChildren(Guid id) {
-            using (var connection =new SqlConnection(configuration.GetConnectionString("MyConnection"))) {
+            var PGSQL = new PGSQL(configuration);
+            using (var connection = PGSQL.createConnection())
+            {
                 connection.Open();
-                var query =@"select * from Roles; select * from Roles where Id in (select distinct ParentId from Roles ) ";
+                var query = "select * from public." + '"' + "Roles" + '"'+";" +
+                    "select * from public."+ '"' + "Roles" + '"' +
+                    " where Id in (select distinct "+'"'+"ParentId"+'"' +"from public."+'"'+"Roles"+'"'+")";
+               // var query =@"select * from Roles; select * from Roles where Id in (select distinct ParentId from Roles ) ";
               var multi= connection.QueryMultiple(query);
                 var roles = multi.Read<Role>().ToList();
                 var parents = multi.Read<Role>().ToList();
@@ -36,7 +44,8 @@ namespace OrgRoles.Models.Queries.Get
                 return null;
             List<Role> children = new();
             await findChildren(id, children, roles);
-            return children;
+                connection.Close();
+                return children;
         }
 
            
@@ -61,35 +70,20 @@ namespace OrgRoles.Models.Queries.Get
 
 
         public async Task<List<Role>> GetRoles() {
-            var sql = "select * from Roles";
-            using (var myconnection = new SqlConnection(configuration.GetConnectionString("MyConnection")))
+            var sql = "select * from public." + '"' + "Roles" + '"';
+            var PGSQL = new PGSQL(configuration);
+            using (var connection = PGSQL.createConnection())
             {
-                myconnection.Open();
-                var roless = await myconnection.QueryAsync<Role>(sql);
-                return roless.ToList();
-
-            }
-        }
-        public async Task<bool> CheckRole(Guid id) {
-           // if (id == null) return false;
-            Role role = await GetRole(id);
-            if (role == null) return false;
-            return true;
-        }
-
-        public async Task<List<Role>> GetSuccessors(Guid id)
-        {
-            using (var connection = new SqlConnection(configuration.GetConnectionString("MyConnection")))
-            {
+              //  List<Role> roles = con.Roles.ToList();
                 connection.Open();
-                var query = "select * from Roles where ParentId=@id";
-                var results= await connection.QueryAsync<Role>(query,new {id});
-                return results.ToList();
+                var roless = await connection.QueryAsync<Role>(sql);
+                 connection.Close();
+                return roless.ToList();
+               
 
             }
-        
+
         }
-    }
-
-
+        
+      }
 }

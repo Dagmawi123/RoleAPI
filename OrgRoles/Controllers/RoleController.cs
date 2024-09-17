@@ -8,7 +8,8 @@ using OrgRoles.Models.Queries.Get;
 
 namespace OrgRoles.Controllers
 {
-    [Route("api/roles")]
+    [Route("api/[controller]/[action]")]
+     //[Route("api/roles")]
     [ApiController]
     public class RoleController : ControllerBase
     {       
@@ -40,6 +41,9 @@ namespace OrgRoles.Controllers
         //one more repo for dapper-getting
         //role priority?
         //snail case for columns..
+
+        //commands repository should also implement get for internal use
+        //interceptor
         [HttpPut("{id}")]
         public async Task<ActionResult<Role>> UpdateRole(UpdateRoleCommand command)
         {
@@ -91,9 +95,9 @@ namespace OrgRoles.Controllers
                 
         }
 
-        //removing only the given node -assigning children nodes into parent
-         [Route("~/api/roles/removeThis/{id}")]
-        [HttpDelete]
+        //removing only the given node -promoting children nodes into parent
+        // [Route("~/api/roles/removeThis/{id}")]
+        [HttpDelete("{id}")]
          public async Task<ActionResult<Role>> RemoveSingleRole(Guid id)
         {
             Role? role =await getRepository.GetRole(id);
@@ -113,8 +117,8 @@ namespace OrgRoles.Controllers
 
 
 
-        [Route("~/api/roles/allChildren/{id}")]
-        [HttpGet]
+        //[Route("~/api/roles/allChildren/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<List<Role>>> GetChildren(Guid id)
         {
             
@@ -126,7 +130,7 @@ namespace OrgRoles.Controllers
             else
                 return Ok(children);
             
-            
+                
         }
 
 

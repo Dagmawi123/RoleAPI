@@ -8,11 +8,13 @@ using System.Data;
 
 namespace OrgRoles.Models.Commands.Update
 {
-    public class UpdateRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository commandsRepository) : IRequestHandler<UpdateRoleCommand, Role>
+    public record UpdateRoleCommand(Guid id, string Name, string Description, Guid? ParentID) : IRequest<Role>;
+
+    public class UpdateRoleCommandHandler(IRoleCommandsRepository commandsRepository) : IRequestHandler<UpdateRoleCommand, Role>
     {
         public async Task<Role> Handle(UpdateRoleCommand updateRolecommand, CancellationToken token)
         {
-            Role? role = await getRepository.GetRole(updateRolecommand.id);
+            Role? role = await commandsRepository.GetRole(updateRolecommand.id);
             if (role == null)
                 return null;
             else
@@ -21,7 +23,7 @@ namespace OrgRoles.Models.Commands.Update
 
             if (updateRolecommand.ParentID!=null) 
             {
-                if (await getRepository.CheckRole(updateRolecommand.ParentID.Value))
+                if (await commandsRepository.CheckRole(updateRolecommand.ParentID.Value))
                     role.ParentId = updateRolecommand.ParentID;
             }
        await commandsRepository.UpdateRole(role);

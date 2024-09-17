@@ -5,8 +5,10 @@ using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Models.Commands.Create
 {
-    public class AddRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository roleCommandsRepo) :IRequestHandler<AddRoleCommand,Role>
-    {
+        public record AddRoleCommand(string Name, string Description, Guid? ParentID, bool isCandidate = false) : IRequest<Role>;
+
+       public class AddRoleCommandHandler(IRoleCommandsRepository roleCommandsRepo) :IRequestHandler<AddRoleCommand,Role>
+        {
         public async Task<Role> Handle(AddRoleCommand ALC , CancellationToken token) {
 
             Role _role = new()
@@ -17,11 +19,12 @@ namespace OrgRoles.Models.Commands.Create
             };
             if (ALC.ParentID!=null)
             {
-                if (await getRepository.CheckRole(ALC.ParentID.Value))
+                if (await roleCommandsRepo.CheckRole(ALC.ParentID.Value))
                     _role.ParentId = ALC.ParentID;
             }
         _role= await roleCommandsRepo.AddRole(_role);
            return _role;
         }
     }
+
 }

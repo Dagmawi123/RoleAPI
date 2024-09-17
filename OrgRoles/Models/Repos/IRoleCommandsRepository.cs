@@ -11,5 +11,9 @@ namespace OrgRoles.Models.Repos
        // public void RemoveRecursive(Role role);
         public Task RemoveThisRole(Role role);
         public void NotifyChange(Role role);
+        public Task<List<Role>> GetRoles();
+        public Task<List<Role>> GetImmediateChildren(Guid id);
+        public Task<Role> GetRole(Guid id);
+        public Task<bool> CheckRole(Guid id);
     }
 }

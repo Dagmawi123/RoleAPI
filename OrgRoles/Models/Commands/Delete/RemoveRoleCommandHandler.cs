@@ -5,12 +5,13 @@ using OrgRoles.Models.Repos;
 
 namespace OrgRoles.Models.Commands.Delete
 {
-    public class RemoveRoleCommandHandler(IGetRepository getRepository,IRoleCommandsRepository commandsRepository) : IRequestHandler<RemoveRoleCommand> 
+    public record RemoveRoleCommand(Role role) : IRequest;
+    public class RemoveRoleCommandHandler(IRoleCommandsRepository commandsRepository) : IRequestHandler<RemoveRoleCommand> 
     {
        
         public async Task Handle(RemoveRoleCommand rrc,CancellationToken token) 
         { 
-            List<Role> roles = await getRepository.GetRoles();
+            List<Role> roles = await commandsRepository.GetRoles();
          RemoveRecursive(rrc.role,roles);
             await commandsRepository.SaveChanges();
             return;

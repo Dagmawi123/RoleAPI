@@ -9,7 +9,7 @@ namespace OrgRoles.Configuration
         public void Configure(EntityTypeBuilder<Role> builder)
         {
             //configure column name with paren
-            builder.Property(r => r.Id).ValueGeneratedOnAdd();
+            builder.Property(r => r.Id).ValueGeneratedOnAdd().HasColumnName("id");
             builder.HasOne(r => r.Parent)
                  .WithMany()
                  .HasForeignKey(r => r.ParentId)
@@ -19,6 +19,10 @@ namespace OrgRoles.Configuration
                 .HasMaxLength(20);
             builder.Property(r=>r.Description).IsRequired(true)
                 .HasMaxLength(150);
+            builder.Property(r => r.isCandidate).HasDefaultValue(false);
+            builder.Property(r => r.ParentId).HasDefaultValue(null);
+
+
 
         }
     }
